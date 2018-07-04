@@ -5,7 +5,7 @@ var express = require('express'),
     engines = require('consolidate'),
     assert = require('assert'),
     ObjectId = require('mongodb').ObjectID,
-    url = 'mongodb://jmc-mining:gCKVvbUFY53dJL0ou0IEMkjARiSBOEIZDKaM3PCuwiklWpkwReTqtVUisjVbP23OYPcwne92ooVqbYO7FhPSRw==@jmc-mining.documents.azure.com:10255/?ssl=true&replicaSet=globaldb';
+    url = 'mongodb://jmc-mining:gCKVvbUFY53dJL0ou0IEMkjARiSBOEIZDKaM3PCuwiklWpkwReTqtVUisjVbP23OYPcwne92ooVqbYO7FhPSRw==@jmc-mining.documents.azure.com:10255/simplemean?ssl=true&replicaSet=globaldb';
 
 app.use(express.static(__dirname + "/public"));
 
