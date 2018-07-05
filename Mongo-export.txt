@@ -1,0 +1,1 @@
+mongoimport.exe --host jmc-mining.documents.azure.com:10255 -u jmc-mining -p gCKVvbUFY53dJL0ou0IEMkjARiSBOEIZDKaM3PCuwiklWpkwReTqtVUisjVbP23OYPcwne92ooVqbYO7FhPSRw== --db simplemean --collection records --ssl --sslAllowInvalidCertificates --type json --file 
