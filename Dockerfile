@@ -1,8 +1,16 @@
-FROM node:latest
-RUN mkdir -p /app
+FROM node:6.9.3
+MAINTAINER Azure App Services Container Images <appsvc-images@microsoft.com>
+
+# Create app directory
 WORKDIR /app
-COPY package.json /app/
+
+# Install app dependencies
+COPY package.json .
+
 RUN npm install
-COPY . /app
-EXPOSE 3000
+
+# Bundle app source
+COPY . .
+
+EXPOSE 8080 80
 CMD [ "npm", "start" ]
