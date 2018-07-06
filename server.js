@@ -1,13 +1,6 @@
-const appInsights = require("applicationinsights");
-appInsights.setup("9c7c6664-beaf-4964-8b9d-c2187eaf08bc")
-    .setAutoDependencyCorrelation(true)
-    .setAutoCollectRequests(true)
-    .setAutoCollectPerformance(true)
-    .setAutoCollectExceptions(true)
-    .setAutoCollectDependencies(true)
-    .setAutoCollectConsole(true)
-    .setUseDiskRetryCaching(true)
-    .start();
+var appInsights = require('applicationinsights');
+appInsights.setup();
+appInsights.start();
 
 var express = require('express'),
     app = express(),
