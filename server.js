@@ -6,6 +6,7 @@ var express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),
     MongoClient = require('mongodb').MongoClient,
+    redisClient = require('redis').createClient,
     engines = require('consolidate'),
     assert = require('assert'),
     ObjectId = require('mongodb').ObjectID,
@@ -20,10 +21,41 @@ app.engine('html', engines.nunjucks);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
+var redis = redisClient(6379, 
+    process.env.REDIS_URI || 'samplets.redis.cache.windows.net', 
+    {auth_pass: process.env.REDIS_PASSKEY || 'HVN8eqBVCTUSNSTxPed7nuQKZJLWfYlrGOdonahCZ8Q='});
+
+var platformId = process.env.PLATFORM_ID || 'Dev';
+
 function errorHandler(err, req, res, next) {
     console.error(err.message);
     console.error(err.stack);
     res.status(500).render("error_template", { error: err});
+}
+
+function loadRecords(records_collection, callback){
+    redis.get(platformId, function(err, reply){
+        if (err) 
+            callback(null);
+        else if (reply) {//Book exists in cache
+            console.log(JSON.parse(reply));    
+            callback(JSON.parse(reply));
+        }
+        else{
+            records_collection.find({}).toArray(function(err, records){
+                if(err) throw err;
+        
+                if(records.length < 1) {
+                    console.log("No records found.");
+                }
+        
+                // console.log(records);
+                redis.set(platformId, JSON.stringify(records), function () {
+                    callback(records);
+                });
+            });
+        }
+    })
 }
 
 MongoClient.connect(process.env.MONGODB_URI || url,function(err, db){
@@ -33,15 +65,7 @@ MongoClient.connect(process.env.MONGODB_URI || url,function(err, db){
     var records_collection = db.collection('records');
 
     app.get('/records', function(req, res, next) {
-        // console.log("Received get /records request");
-        records_collection.find({}).toArray(function(err, records){
-            if(err) throw err;
-
-            if(records.length < 1) {
-                console.log("No records found.");
-            }
-
-            // console.log(records);
+        loadRecords(records_collection, function(records){
             res.json(records);
         });
     });
@@ -51,6 +75,8 @@ MongoClient.connect(process.env.MONGODB_URI || url,function(err, db){
         records_collection.insert(req.body, function(err, doc) {
             if(err) throw err;
             console.log(doc);
+            //clearing the cache since the cache invalid
+            redis.del(platformId);
             res.json(doc);
         });
     });
